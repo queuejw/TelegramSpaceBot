@@ -5,15 +5,14 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from core import constants
 from core.command_utils import bot_send_message, bot_edit_message
+from game import start_game
 
 router = Router(name="info_commands_router")
 
 @router.callback_query(F.data == "play_callback")
-async def start_game(callback: CallbackQuery):
-    await callback.answer(
-        text="Спасибо за интерес!\n\nВ данный момент не реализовано.",
-        show_alert=True
-    )
+async def bot_start_game(callback: CallbackQuery):
+    await callback.answer(text="Загружаем игру...",)
+    start_game.start_new_game(callback.message.chat.id)
 
 @router.callback_query(F.data == "help_callback")
 async def help_bot_callback(callback: CallbackQuery):
