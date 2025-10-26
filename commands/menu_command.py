@@ -19,7 +19,7 @@ async def update_menu(menu_name: str, chat_id: int, message_id: int, old_text: s
             new_text = get_computer_text(chat_id)
             if new_text != old_text:
                 await bot_edit_message(chat_id, message_id,
-                                       get_computer_text(chat_id), get_back_keyboard().as_markup())
+                                       new_text, get_back_keyboard().as_markup())
             else:
                 if constants.DEBUG_MODE:
                     print("Текст не изменился, невозможно обновить меню.")
@@ -27,9 +27,9 @@ async def update_menu(menu_name: str, chat_id: int, message_id: int, old_text: s
 
 @router.callback_query(F.data == "menu_start_game")
 async def create_new_game_callback(callback: CallbackQuery):
-    # Искусственно ограничиваем работу бота в группах / каналах. Это временно, я надеюсь.
-    if callback_check_is_game_active(callback):
+    if game_main.is_game_active(callback.message.chat.id):
         return
+    # Искусственно ограничиваем работу бота в группах / каналах. Это временно, я надеюсь.
     if callback.message.chat.type != ChatType.PRIVATE:
         await callback.answer(
             text="❌ В данный момент бот не работает в группах.",
@@ -58,7 +58,7 @@ def get_back_keyboard() -> InlineKeyboardBuilder:
 
 @router.callback_query(F.data == "menu_back")
 async def bot_menu_back(callback: CallbackQuery):
-    if not callback_check_is_game_active(callback):
+    if not await callback_check_is_game_active(callback):
         return
     await callback.answer("Возврат в главное меню")
     await bot_send_menu(callback.message.chat.id, callback.message.message_id)
@@ -66,11 +66,11 @@ async def bot_menu_back(callback: CallbackQuery):
 
 @router.callback_query(F.data == "menu_update_screen")
 async def bot_update_menu(callback: CallbackQuery):
-    if not callback_check_is_game_active(callback):
+    if not await callback_check_is_game_active(callback):
         return
-    await callback.answer("Обновляем меню ...")
     await update_menu(game_main.ALL_PLAYERS[callback.message.chat.id].screen, callback.message.chat.id,
                       callback.message.message_id, callback.message.text)
+    await callback.answer("Обновляем меню ...")
 
 
 # Возвращает клавиатуру с кнопкой создать игру. Используется, если игрок вводит команду меню, но при этом игра не активна.
@@ -98,7 +98,7 @@ def get_computer_text(chat_id: int) -> str:
 
 @router.callback_query(F.data == "menu_computer")
 async def computer(callback: CallbackQuery):
-    if not callback_check_is_game_active(callback):
+    if not await callback_check_is_game_active(callback):
         return
     game_main.ALL_PLAYERS[callback.message.chat.id].screen = "computer"
     await update_menu("computer", callback.message.chat.id, callback.message.message_id, callback.message.text)

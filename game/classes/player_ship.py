@@ -6,7 +6,7 @@ class Ship:
         self.chat_id = chat_id
         self.ship_name = user_ship_name
         self.health = 100
-        self.speed = 0
+        self.speed = 100
         self.fuel = 100
         self.oxygen = 100
         self.screen = "main"  # Текущий экран меню. Это значение сохранять не нужно.

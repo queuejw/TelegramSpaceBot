@@ -24,9 +24,9 @@ async def bot_edit_message(chat_id: int, message_id: int, m_message: str, m_repl
     try:
         await BOT.edit_message_text(text=m_message, chat_id=chat_id, message_id=message_id, reply_markup=m_reply_markup)
     except TelegramNetworkError as e:
-        print_send_message_error(e.message)
+        print_edit_message_error(e.message)
     except TelegramBadRequest as e:
-        print_send_message_error(e.message)
+        print_edit_message_error(e.message)
 
 
 async def callback_check_is_game_active(callback: CallbackQuery) -> bool:

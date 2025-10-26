@@ -1,6 +1,9 @@
+import asyncio
+
 from core import constants
 from core.command_utils import bot_edit_message
 from core.manager import save_manager
+from game import game_cycles
 from game import game_main
 
 
@@ -12,6 +15,7 @@ def get_menu_tip() -> str:
 async def start_new_game(chat_id: int, menu_message_id: int):
     player_dict = save_manager.load_ship_state(chat_id)  # Загрузка сохранения, либо создание нового.
     game_main.ALL_PLAYERS[chat_id] = player_dict['ship']  # Добавляем в список игроков загруженный корабль
+    asyncio.create_task(game_cycles.main_game_cycle(chat_id))
     if player_dict['default']:
         text = (
                 "🚀 Игра началась!" + get_menu_tip()
