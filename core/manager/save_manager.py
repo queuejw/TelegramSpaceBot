@@ -4,14 +4,17 @@ import os
 from core import constants
 from game.classes.player_ship import Ship
 
+
 def create_random_name() -> str:
     return "TestPlane-52"
+
 
 def get_default_ship(chat_id: int) -> Ship:
     return Ship(chat_id, create_random_name())
 
-# Загружает сохранение игрока. Если его нет, возвращает новый корабль.
-def load_ship_state(chat_id: int) -> Ship:
+
+# Загружает сохранение игрока. Если его нет, создает новый корабль. Возвращает словарь со значениями ship : Ship, default: bool
+def load_ship_state(chat_id: int) -> dict:
     path = f'{constants.SAVES_PATH}\\{chat_id}\\save.json'
     if constants.DEBUG_MODE:
         print(f"Попытка загрузить файл {path}")
@@ -20,15 +23,22 @@ def load_ship_state(chat_id: int) -> Ship:
             state = json.load(save_file)
             save_file.close()
             if constants.DEBUG_MODE:
+                print(f"Файл {path} успешно загружен")
                 print(state)
-            return Ship(chat_id, 'loaded').import_from_dict(state)
+            return {
+                'default': False,
+                'ship': Ship(chat_id, 'loaded').import_from_dict(state)
+            }
     except FileNotFoundError:
         print(f"[E] Файл {path} не найден. Используем стандартный.")
 
     # Если загрузить не удалось, возвращаем None.
     default = get_default_ship(chat_id)
     save_ship_state(chat_id, default.export_as_dict())
-    return default
+    return {
+        'default': True,
+        'ship': default
+    }
 
 
 def save_ship_state(chat_id: int, state: dict):

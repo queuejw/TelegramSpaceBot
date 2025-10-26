@@ -6,7 +6,8 @@ async def start_bot():
     dp = Dispatcher()
 
     from core.routers import ROUTERS
-    dp.include_router(ROUTERS)
+    for router in ROUTERS:
+        dp.include_router(router)
 
     await BOT.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(BOT)
