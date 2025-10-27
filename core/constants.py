@@ -1,5 +1,6 @@
 DEBUG_MODE = True  # Режим отладки, выводит больше деталей в консоль.
-TOKEN_PATH = 'token.txt'  # Путь до файла с токеном
+TOKEN_PATH = 'token.txt'  # Путь до txt файла с токеном
+PLANETS_PATH = 'planets.json'  # Путь до json файла с планетами (название, описание, опасность)
 SAVES_PATH = 'saves'  # Папка с сохранениями игроков. Выглядит так: SAVES_PATH -> chat_id -> save.json
 
 GITHUB_LINK = "https://github.com/queuejw/TelegramSpaceBot"

@@ -23,6 +23,22 @@ async def update_menu(menu_name: str, chat_id: int, message_id: int, old_text: s
             else:
                 if constants.DEBUG_MODE:
                     print("Текст не изменился, невозможно обновить меню.")
+        case "navigation":
+            new_text = "Не реализовано."
+            if new_text != old_text:
+                await bot_edit_message(chat_id, message_id,
+                                       new_text, get_back_keyboard().as_markup())
+            else:
+                if constants.DEBUG_MODE:
+                    print("Текст не изменился, невозможно обновить меню.")
+        case "captain":
+            new_text = "Не реализовано. Пока что"
+            if new_text != old_text:
+                await bot_edit_message(chat_id, message_id,
+                                       new_text, get_back_keyboard().as_markup())
+            else:
+                if constants.DEBUG_MODE:
+                    print("Текст не изменился, невозможно обновить меню.")
 
 
 @router.callback_query(F.data == "menu_start_game")
@@ -104,6 +120,22 @@ async def computer(callback: CallbackQuery):
     await update_menu("computer", callback.message.chat.id, callback.message.message_id, callback.message.text)
 
 
+@router.callback_query(F.data == "navigation_menu")
+async def navigation(callback: CallbackQuery):
+    if not await callback_check_is_game_active(callback):
+        return
+    game_main.ALL_PLAYERS[callback.message.chat.id].screen = "navigation"
+    await update_menu("navigation", callback.message.chat.id, callback.message.message_id, callback.message.text)
+
+
+@router.callback_query(F.data == "menu_captain")
+async def navigation(callback: CallbackQuery):
+    if not await callback_check_is_game_active(callback):
+        return
+    game_main.ALL_PLAYERS[callback.message.chat.id].screen = "captain"
+    await update_menu("captain", callback.message.chat.id, callback.message.message_id, callback.message.text)
+
+
 # Возвращает клавиатуру главного меню.
 def get_game_main_keyboard() -> InlineKeyboardBuilder:
     builder = InlineKeyboardBuilder()
@@ -111,6 +143,16 @@ def get_game_main_keyboard() -> InlineKeyboardBuilder:
         InlineKeyboardButton(
             text="🖥 Компьютер",
             callback_data="menu_computer"
+        ),
+        InlineKeyboardButton(
+            text="🗺 Навигация",
+            callback_data="navigation_menu"
+        )
+    )
+    builder.row(
+        InlineKeyboardButton(
+            text="⚓️ Главный отсек",
+            callback_data="menu_captain"
         )
     )
     return builder

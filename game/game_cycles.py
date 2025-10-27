@@ -23,5 +23,6 @@ async def main_game_cycle(chat_id: int):
         game_main.ALL_PLAYERS[chat_id] = player_ship
         if constants.DEBUG_MODE:
             print(f"Основной цикл для чата {chat_id} завершён")
-        save_manager.save_ship_state(chat_id, player_ship.export_as_dict()) # Надо перенести авто-сохранения в другое место
+        save_manager.save_ship_state(chat_id,
+                                     player_ship.export_as_dict())  # Надо перенести авто-сохранения в другое место
         await asyncio.sleep(10)
