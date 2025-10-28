@@ -84,3 +84,29 @@ def get_game_main_keyboard() -> InlineKeyboardBuilder:
         )
     )
     return builder
+
+
+# Возвращает клавиатуру с кнопками навигации по планетам.
+def get_menu_navigation_keyboard() -> InlineKeyboardBuilder:
+    builder = InlineKeyboardBuilder()
+    builder.row(
+        InlineKeyboardButton(
+            text="◀️ Назад",
+            callback_data="back_action_navigation_menu"
+        ),
+        InlineKeyboardButton(
+            text="✅ Лететь!",
+            callback_data="accept_action_navigation_menu"
+        ),
+        InlineKeyboardButton(
+            text="▶️ Дальше",
+            callback_data="next_action_navigation_menu"
+        )
+    )
+    builder.row(
+        InlineKeyboardButton(
+            text="❌ Отмена",
+            callback_data="menu_back"
+        )
+    )
+    return builder

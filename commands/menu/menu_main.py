@@ -22,14 +22,6 @@ async def update_menu(menu_name: str, chat_id: int, message_id: int, old_text: s
             else:
                 if constants.DEBUG_MODE:
                     print("Текст не изменился, невозможно обновить меню.")
-        case "navigation":
-            new_text = "Не реализовано."
-            if new_text != old_text:
-                await bot_edit_message(chat_id, message_id,
-                                       new_text, get_back_keyboard().as_markup())
-            else:
-                if constants.DEBUG_MODE:
-                    print("Текст не изменился, невозможно обновить меню.")
         case "captain":
             new_text = "Не реализовано. Пока что"
             if new_text != old_text:

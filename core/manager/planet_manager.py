@@ -14,11 +14,8 @@ def load_planets() -> list:
             planets_file.close()
             if constants.DEBUG_MODE:
                 print(f"Планеты успешно загружены, создание списка ...")
-                print(planets)
 
-            generated_list = []
-            for m in planets:
-                generated_list.append(Planet(m['name'], m['description'], m['danger']))
+            generated_list = [Planet(m['id'], m['name'], m['description'], m['danger']) for m in planets]
             return generated_list
     except FileNotFoundError:
         print(
