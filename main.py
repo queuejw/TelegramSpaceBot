@@ -9,8 +9,8 @@ async def start_bot():
     for router in ROUTERS:
         dp.include_router(router)
 
-    from core.manager import planet_manager
-    planet_manager.load_planets()
+    #from core.manager import planet_manager
+    #planet_manager.load_planets()
 
     await BOT.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(BOT)
