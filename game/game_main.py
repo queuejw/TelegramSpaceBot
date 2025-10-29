@@ -1,7 +1,9 @@
 ALL_PLAYERS = {}  # Словарь активных кораблей игроков; chat id - объект ship
 
 from core.manager import planet_manager
-PLANETS = planet_manager.load_planets() # Список планет
+
+PLANETS = planet_manager.load_planets()  # Список планет
+
 
 # Вернет True, если игра в чате chat_id активна.
 def is_game_active(chat_id: int) -> bool:

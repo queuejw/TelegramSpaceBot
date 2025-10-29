@@ -9,13 +9,34 @@ from game.classes.player_ship import Ship
 menu_router = Router(name="menu_computer_command_router")
 
 
+# Возвращает эмодзи со значением статуса корабля.
+def get_ship_status_emoji(ship: Ship) -> str:
+    crew_sum_health = 0 * 100  # Общее максимально возможное здоровье членов экипажа. Например, если на корабле 2 игрока, значение будет равно 200.
+
+    current_level = ship.health + ship.oxygen + ship.fuel + 0  # Пока что без учета экипажа.
+
+    # Условия без учета экипажа
+    if current_level > 150 + crew_sum_health:
+        return "🟢"
+    if 75 + crew_sum_health <= current_level <= 150 + crew_sum_health:
+        return "🟡"
+    if 30 + crew_sum_health <= current_level <= 74 + crew_sum_health:
+        return "🟠"
+    if current_level < 29 + crew_sum_health:
+        return "🔴"
+
+    return "🟢"
+
+
 def get_computer_text(chat_id: int) -> str:
     ship: Ship = game_main.ALL_PLAYERS[chat_id]
     return (
-        f"🚀 Корабль {ship.ship_name}\n"
-        "Состояние: 🟢\n"
+        f"🚀 Корабль {ship.ship_name}\n\n"
+        f"Состояние: {get_ship_status_emoji(ship)}\n"
         "======\n"
         f"💨 Скорость: {ship.speed}\n"
+        f"⛽️ Топливо: {ship.fuel}%\n"
+        f"💨 Кислород: {ship.oxygen}%"
         f"🛡 Прочность: {ship.health}%\n"
     )
 
