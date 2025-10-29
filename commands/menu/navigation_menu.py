@@ -7,7 +7,7 @@ from commands.menu.menu_keyboards import get_menu_navigation_keyboard
 from core import constants
 from core.command_utils import callback_check_is_game_active, bot_edit_message
 from game.classes.planet import Planet
-from game.game_main import PLANETS
+from game.game_main import PLANETS, get_planet_by_id
 
 menu_router = Router(name="menu_navigation_command_router")
 current_planet = {}  # Текущая планета в списке: chat_id - planet_id
@@ -49,15 +49,6 @@ def update_page_value(chat_id: int, is_next: bool):
         current_planet[chat_id] += 1
     else:
         current_planet[chat_id] -= 1
-
-
-# Возвращает планету по её ID
-def get_planet_by_id(m_id: int) -> Planet:
-    l = [x for x in PLANETS if x.id == m_id]
-    if len(l) < 1:
-        return random.choice(PLANETS)
-    return l[0]
-
 
 @menu_router.callback_query(F.data.contains("_action_navigation_menu"))
 async def change_navigation_menu_page(callback: CallbackQuery):

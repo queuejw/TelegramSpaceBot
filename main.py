@@ -1,4 +1,7 @@
 # Инициализация бота
+from aiogram.exceptions import TelegramNetworkError
+
+
 async def start_bot():
     from core.bot_core import BOT
     from aiogram import Dispatcher
@@ -25,3 +28,5 @@ if __name__ == "__main__":
         asyncio.run(start_bot())
     except KeyboardInterrupt:
         print("Завершение работы.")
+    except TelegramNetworkError as e:
+        print(f"[E] Обнаружена ошибка соединения. Работа приостановлена. Детали ошибки: {e}")

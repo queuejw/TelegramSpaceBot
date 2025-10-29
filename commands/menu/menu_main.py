@@ -7,6 +7,7 @@ from commands.menu.menu_keyboards import get_back_keyboard, get_game_main_keyboa
 from core import constants
 from core.command_utils import bot_edit_message, callback_check_is_game_active, bot_send_message
 from game import game_main
+from game.game_main import user_allowed
 
 menu_router = Router(name="menu_main_command_router")
 
@@ -60,6 +61,10 @@ async def bot_send_menu(chat_id: int, message_id: int = None):
 
 @menu_router.message(Command("menu"))
 async def send_game_menu(message: Message):
+    if not user_allowed(message.from_user.id):
+        await message.reply(
+            f"Уважаемый(ая) {message.from_user.first_name}!\n\nК сожалению, для Вас доступ к боту ограничен. Свяжитесь с разработчиками, чтобы получить доступ.")
+        return
     if not game_main.is_game_active(message.chat.id):
         await bot_send_message(message.chat.id, "❌ Игра не активна!", get_create_game_keyboard().as_markup())
     else:

@@ -13,14 +13,14 @@ def get_new_ship_speed(ship: Ship) -> int:
     current_speed = ship.speed
     if ship.fuel < 1:
         if random.random() < 0.75:
-            current_speed = clamp(0, 9999, current_speed - random.randint(10, 125))
+            current_speed = clamp(0, 1200, current_speed - random.randint(10, 25))
         else:
-            current_speed = clamp(0, 9999, current_speed + random.randint(5, 25))
+            current_speed = clamp(0, 1200, current_speed + random.randint(10, 25))
     else:
-        if random.random() < 0.75:
-            current_speed = clamp(0, 9999, current_speed + random.randint(100, 400))
+        if random.random() < 0.75 and current_speed < 1150:
+            current_speed = clamp(0, 1200, current_speed + random.randint(25, 150))
         else:
-            current_speed = clamp(0, 9999, current_speed - random.randint(5, 100))
+            current_speed = clamp(0, 1200, current_speed - random.randint(25, 100))
 
     return current_speed
 
@@ -37,9 +37,13 @@ async def main_game_cycle(chat_id: int):
             await bot_send_message(chat_id, "❌ Игра завершена!\n\nКорабль был уничтожен.")
             break
 
-        # Если повезёт, уменьшаем количество топлива.
-        if random.random() > 0.9:
-            player_ship.fuel = clamp(0, 100, player_ship.fuel - 1)
+        if not player_ship.on_planet:  # Если мы не на планете
+            # Если повезёт, уменьшаем количество топлива.
+            if random.random() > 0.9:
+                player_ship.fuel = clamp(0, 100, player_ship.fuel - 1)
+        else:
+            # Нулевая скорость, если мы на планете
+            player_ship.speed = random.randint(0, 1)
 
         # Если закончилось топливо, уведомляем игрока и уменьшаем уровень кислорода
         if player_ship.fuel < 1:

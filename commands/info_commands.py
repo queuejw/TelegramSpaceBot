@@ -7,7 +7,7 @@ from commands.menu.menu_keyboards import get_main_info_commands_keyboard, get_in
 from core import constants
 from core.command_utils import bot_send_message, bot_edit_message
 from game import start_game
-from game.game_main import is_game_active
+from game.game_main import is_game_active, user_allowed
 
 router = Router(name="info_commands_router")
 
@@ -72,4 +72,8 @@ async def send_start_command_text(chat_id: int, edit_text: bool = False, message
 # Обрабатывает команду /start. Отправляет приветствие (с кнопками).
 @router.message(CommandStart())
 async def start_command_handler(message: Message):
-    await send_start_command_text(chat_id=message.chat.id)
+    if user_allowed(message.from_user.id):
+        await send_start_command_text(chat_id=message.chat.id)
+    else:
+        await message.reply(
+            f"Уважаемый(ая) {message.from_user.first_name}!\n\nК сожалению, для Вас доступ к боту ограничен. Свяжитесь с разработчиками, чтобы получить доступ.")
