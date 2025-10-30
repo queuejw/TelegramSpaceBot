@@ -47,7 +47,7 @@ def get_computer_text(chat_id: int) -> str:
             f"🚀 Корабль {ship.ship_name}\n\n"
             f"Состояние: {get_ship_status_emoji(ship)}\n"
             "======\n"
-            f"Сейчас мы находимся на планете {planet.name}"
+            f"Сейчас мы находимся на планете {planet.name}\n"
             "======\n"
             f"⛽️ Топливо: {ship.fuel}%\n"
             f"💨 Кислород: {ship.oxygen}%\n"

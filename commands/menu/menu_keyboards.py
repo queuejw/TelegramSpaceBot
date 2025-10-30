@@ -110,3 +110,21 @@ def get_menu_navigation_keyboard() -> InlineKeyboardBuilder:
         )
     )
     return builder
+
+
+# Возвращает клавиатуру с кнопками навигации в случае, если игрок уже находится на планете.
+def get_on_planet_menu_navigation_keyboard() -> InlineKeyboardBuilder:
+    builder = InlineKeyboardBuilder()
+    builder.row(
+        InlineKeyboardButton(
+            text="🚀 Покинуть планету",
+            callback_data="leave_planet_action_navigation_menu"
+        )
+    )
+    builder.row(
+        InlineKeyboardButton(
+            text="◀️ Назад",
+            callback_data="menu_back"
+        )
+    )
+    return builder
