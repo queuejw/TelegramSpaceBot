@@ -6,21 +6,20 @@ from core.command_utils import bot_send_message
 from core.manager import save_manager
 from game import game_main
 from game.classes.player_ship import Ship
-from game.game_main import clamp, stop_game
 
 
 def get_new_ship_speed(ship: Ship) -> int:
     current_speed = ship.speed
     if ship.fuel < 1:
         if random.random() < 0.75:
-            current_speed = clamp(0, 1200, current_speed - random.randint(10, 25))
+            current_speed = game_main.clamp(0, 1200, current_speed - random.randint(10, 25))
         else:
-            current_speed = clamp(0, 1200, current_speed + random.randint(10, 25))
+            current_speed = game_main.clamp(0, 1200, current_speed + random.randint(10, 25))
     else:
         if random.random() < 0.75 and current_speed < 1150:
-            current_speed = clamp(0, 1200, current_speed + random.randint(25, 150))
+            current_speed = game_main.clamp(0, 1200, current_speed + random.randint(25, 150))
         else:
-            current_speed = clamp(0, 1200, current_speed - random.randint(25, 100))
+            current_speed = game_main.clamp(0, 1200, current_speed - random.randint(25, 100))
 
     return current_speed
 
@@ -33,14 +32,14 @@ async def main_game_cycle(chat_id: int):
 
         # Завершаем игру, если прочность корабля на нуле
         if player_ship.health < 1:
-            stop_game(chat_id)
+            game_main.stop_game(chat_id)
             await bot_send_message(chat_id, "❌ Игра завершена!\n\nКорабль был уничтожен.")
             break
 
         if not player_ship.on_planet:  # Если мы не на планете
             # Если повезёт, уменьшаем количество топлива.
             if random.random() > 0.9:
-                player_ship.fuel = clamp(0, 100, player_ship.fuel - 1)
+                player_ship.fuel = game_main.clamp(0, 100, player_ship.fuel - 1)
         else:
             # Нулевая скорость, если мы на планете
             player_ship.speed = random.randint(0, 1)
@@ -50,7 +49,7 @@ async def main_game_cycle(chat_id: int):
 
             # Если везёт, уменьшаем кислорода
             if random.random() > 0.6:
-                player_ship.oxygen = clamp(0, 100, player_ship.oxygen - 1)
+                player_ship.oxygen = game_main.clamp(0, 100, player_ship.oxygen - 1)
 
             if fuel_warning_enabled:
                 fuel_warning_enabled = False
@@ -96,3 +95,39 @@ async def tech_game_cycle(chat_id: int):
                                      player_ship.export_as_dict())
         del player_ship
         await asyncio.sleep(60)
+
+
+# Цикл для работы системы полетов.
+async def fly_cycle(chat_id: int, planet_name: str, leave: bool):
+    time = random.randint(45, 120)
+    if leave: time = random.randint(20, 40)
+
+    game_main.ALL_PLAYERS[chat_id].actions_blocked = True
+
+    while time > 0:
+        time -= 1
+        if not game_main.is_game_active(chat_id):
+            if constants.DEBUG_MODE:
+                print("Отмена полета, игра завершена.")
+            return
+        if game_main.ALL_PLAYERS[chat_id].fuel < 1:
+            if constants.DEBUG_MODE:
+                print("Отмена полета, топливо закончилось")
+            game_main.ALL_PLAYERS[chat_id].actions_blocked = False
+            await bot_send_message(chat_id,
+                                   "⚠️ Мы не можем продолжить полёт!\n\nДвигатели отключены из-за нехватки топлива")
+            return
+
+        game_main.ALL_PLAYERS[chat_id].tech_nav_clock = time
+        await asyncio.sleep(1)
+
+    if constants.DEBUG_MODE:
+        print("Полёт завершен.")
+    game_main.ALL_PLAYERS[chat_id].actions_blocked = False
+    game_main.ALL_PLAYERS[chat_id].tech_nav_clock = -1
+    if leave:
+        game_main.ALL_PLAYERS[chat_id].on_planet = False
+        await bot_send_message(chat_id, f"✅ Мы успешно покинули планету {planet_name}!")
+    else:
+        game_main.ALL_PLAYERS[chat_id].on_planet = True
+        await bot_send_message(chat_id, f"✅ Полёт успешно завершён.\nДобро пожаловать на планету {planet_name}!")

@@ -5,7 +5,6 @@ from commands.menu import menu_main
 from core.command_utils import callback_check_is_game_active
 from game import game_main
 from game.classes.player_ship import Ship
-from game.game_main import get_planet_by_id
 
 menu_router = Router(name="menu_computer_command_router")
 
@@ -42,7 +41,7 @@ def get_computer_text(chat_id: int) -> str:
             f"🛡 Прочность: {ship.health}%\n"
         )
     else:
-        planet = get_planet_by_id(ship.planet_id)
+        planet = game_main.get_planet_by_id(ship.planet_id)
         return (
             f"🚀 Корабль {ship.ship_name}\n\n"
             f"Состояние: {get_ship_status_emoji(ship)}\n"

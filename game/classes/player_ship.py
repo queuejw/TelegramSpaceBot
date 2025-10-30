@@ -10,9 +10,10 @@ class Ship:
         self.fuel = 100  # Уровень топлива 0 - 100
         self.oxygen = 100  # Уровень кислорода 0 - 100
         self.on_planet = False  # Корабль находится на планете?
-        self.planet_id = -1 # ID планеты, на которой находится корабль. Если -1, значит корабль не находится на планете (см. выше)
+        self.planet_id = -1  # ID планеты, на которой находится корабль. Если -1, значит корабль не находится на планете (см. выше)
         self.actions_blocked = False  # Действия игроков заблокированы?
-        self.screen = "main"  # Текущий экран меню. Это значение сохранять не нужно.
+        self.tech_nav_clock = -1  # Время, которое осталось до завершения полёта. Это значение сохранять не нужно.
+        self.tech_screen = "main"  # Текущий экран меню. Это значение сохранять не нужно.
 
     # Экспортирует этот объект в виде словаря, для удобного сохранения в json.
     def export_as_dict(self) -> dict:
@@ -24,6 +25,7 @@ class Ship:
             'fuel': self.fuel,
             'oxygen': self.oxygen,
             'on_planet': self.on_planet,
+            'planet_id': self.planet_id,
             'actions_blocked': self.actions_blocked
         }
         return ex_dict
@@ -38,6 +40,7 @@ class Ship:
             self.fuel = imported_ship['fuel']
             self.oxygen = imported_ship['oxygen']
             self.on_planet = imported_ship['on_planet']
+            self.planet_id = imported_ship['planet_id']
             self.actions_blocked = imported_ship['actions_blocked']
         except KeyError as e:
             print(f"[E] Не удалось импортировать какие-то данные из JSON. Возможно, файл устарел. Детали: {e}")

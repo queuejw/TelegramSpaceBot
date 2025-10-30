@@ -4,6 +4,7 @@ from aiogram.types import CallbackQuery, Message
 
 from commands.menu import computer_menu
 from commands.menu.menu_keyboards import get_back_keyboard, get_game_main_keyboard, get_create_game_keyboard
+from commands.menu.navigation_menu import get_fly_text
 from core import constants
 from core.command_utils import bot_edit_message, callback_check_is_game_active, bot_send_message
 from game import game_main
@@ -32,6 +33,26 @@ async def update_menu(menu_name: str, chat_id: int, message_id: int, old_text: s
                 if constants.DEBUG_MODE:
                     print("Текст не изменился, невозможно обновить меню.")
 
+        case "navigation_waiting":
+            ship = game_main.ALL_PLAYERS[chat_id]
+
+            # Если полёт был завершен, выводим обычное меню навигации.
+            if ship.tech_nav_clock == -1 and not ship.actions_blocked:
+                ship.tech_screen = "main"
+                game_main.ALL_PLAYERS[chat_id] = ship
+                del ship
+                return
+
+            new_text = get_fly_text(ship)
+            if new_text != old_text:
+                await bot_edit_message(chat_id, message_id,
+                                       new_text, get_back_keyboard().as_markup())
+            else:
+                if constants.DEBUG_MODE:
+                    print("Текст не изменился, невозможно обновить меню.")
+
+            del ship
+
 
 @menu_router.callback_query(F.data == "menu_back")
 async def bot_menu_back(callback: CallbackQuery):
@@ -45,14 +66,14 @@ async def bot_menu_back(callback: CallbackQuery):
 async def bot_update_menu(callback: CallbackQuery):
     if not await callback_check_is_game_active(callback):
         return
-    await update_menu(game_main.ALL_PLAYERS[callback.message.chat.id].screen, callback.message.chat.id,
+    await update_menu(game_main.ALL_PLAYERS[callback.message.chat.id].tech_screen, callback.message.chat.id,
                       callback.message.message_id, callback.message.text)
     await callback.answer("Обновляем меню ...")
 
 
 # Отправляет главное меню
 async def bot_send_menu(chat_id: int, message_id: int = None):
-    game_main.ALL_PLAYERS[chat_id].screen = "main"
+    game_main.ALL_PLAYERS[chat_id].tech_screen = "main"
     if message_id is None:
         await bot_send_message(chat_id, "Меню управления кораблём", get_game_main_keyboard().as_markup())
     else:
